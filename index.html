@@ -1,24 +1,27 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>JeenaFlix Player</title>
 <script src="https://www.youtube.com/iframe_api"></script>
 <style>
 body{margin:0;background:#000;overflow:hidden;font-family:Arial,sans-serif}
-.player-container{position:relative;width:100vw;height:100vh;background:#000;overflow:hidden}
-/* ویڈیو زومنگ کنٹرول */
-.video-wrap{position:absolute;top:-4%;left:-2%;width:104%;height:108%;z-index:1;pointer-events:none;transition:all 0.4s ease}
-.video-wrap.zoomed{top:-30%;left:-15%;width:130%;height:160%} 
+.player-container{position:relative;width:100vw;height:100vh;background:#000;overflow:hidden;transition:transform 0.3s ease}
+.video-wrap{position:absolute;top:-4%;left:-2%;width:104%;height:108%;z-index:1;pointer-events:none;transition:all .5s ease}
+.video-wrap.zoomed{top:-21%;left:-9%;width:118%;height:142%}
 #player{width:100%;height:100%}
 #player iframe{pointer-events:none!important}
-
-.brand{position:absolute;top:15px;left:15px;z-index:999999;color:#fff;font-weight:900;font-size:22px;pointer-events:none;text-shadow:0 2px 8px rgba(0,0,0,.9)}
-.center-brand-wrap{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:999999;color:#fff;}
-.main-text{font-size:35px;font-weight:900;font-family:monospace;white-space:nowrap;overflow:hidden;border-right:4px solid #e50914;width:0;animation:typing 3s steps(30) forwards,blink .7s infinite;text-shadow:0 0 20px #e50914;margin:0 auto;}
-.sub-text{font-size:13px;color:#e50914;margin-top:12px;opacity:0;animation:fadeIn 1s 3s forwards;letter-spacing:1.5px;text-transform:uppercase;font-weight:bold;}
-@keyframes typing{from{width:0}to{width:360px}}@keyframes blink{50%{border-color:transparent}}@keyframes fadeIn{to{opacity:1}}
-
+.brand{position:absolute;top:15px;left:15px;z-index:99999;background:transparent;color:#fff;padding:0;font-weight:900;font-size:22px;pointer-events:none;text-shadow:0 2px 8px rgba(0,0,0,.9)}
+.intro-site{position:absolute;inset:0;z-index:9999999;background:#000;display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;font-weight:900;letter-spacing:1px;text-shadow:0 0 18px rgba(229,9,20,.9)}
+.intro-site.hide{display:none}
+#typingText{border-right:3px solid #e50914;padding-right:5px;animation:blink .7s infinite}
+@keyframes blink{50%{border-color:transparent}}
 .bottom-panel{position:absolute;left:0;bottom:0;width:100%;background:linear-gradient(to top,rgba(0,0,0,.9) 0,transparent 100%);padding:10px 15px;box-sizing:border-box;z-index:99999;opacity:0;pointer-events:none;transition:.25s;display:flex;flex-direction:column;gap:12px}
 .show-controls .bottom-panel{opacity:1;pointer-events:auto}
+.seekbar-container{width:100%;display:flex;align-items:center}
 .seekbar{width:100%;height:3px;-webkit-appearance:none;background:rgba(255,255,255,.3);border-radius:2px;outline:none;cursor:pointer;accent-color:#e50914}
+.seekbar::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;background:#e50914;border-radius:50%;cursor:pointer}
 .controls-row{display:flex;justify-content:space-between;align-items:center;width:100%}
 .left-controls,.right-controls{display:flex;align-items:center;gap:18px}
 .ctrl-btn{background:0 0;border:none;cursor:pointer;padding:0;display:flex;justify-content:center;align-items:center}
@@ -34,34 +37,44 @@ body{margin:0;background:#000;overflow:hidden;font-family:Arial,sans-serif}
 .replay-btn{background:#e50914;color:#fff;border:none;padding:12px 22px;border-radius:10px;font-size:17px;cursor:pointer}
 .dl-box{position:absolute;bottom:70px;right:20px;background:#111;padding:15px;border-radius:8px;border:1px solid #e50914;display:none;z-index:999999}
 .dl-box a{color:#fff;text-decoration:none;display:block;padding:5px 0}
-</style></head>
+@media(max-width:600px){.brand{font-size:18px}.intro-site{font-size:22px}.time-display{font-size:12px}.ctrl-btn svg{width:22px;height:22px}.left-controls,.right-controls{gap:12px}}
+</style>
+</head>
 <body oncontextmenu="return false">
 
 <div id="container" class="player-container">
-<div class="video-wrap zoomed" id="videoWrap"><div id="player"></div></div>
-
+<div class="video-wrap" id="videoWrap"><div id="player"></div></div>
 <div class="brand">JeenaFlix</div>
-<div id="centerBrand" class="center-brand-wrap">
-    <div class="main-text">www.JeenaFlix.com</div>
-    <div class="sub-text">Download JeenaFlix App for the best experience!</div>
-</div>
-
+<div id="introSite" class="intro-site"><span id="typingText"></span></div>
 <div id="dlBox" class="dl-box"><a href="#" id="dlLink" target="_blank">📥 Download Video</a></div>
 <div id="soundStart" class="start-sound">Tap to Play with Sound</div>
 <div id="backMsg" class="tap-msg left">-10s</div>
 <div id="forwardMsg" class="tap-msg right">+10s</div>
 
 <div class="bottom-panel">
-    <div class="seekbar-container"><input type="range" id="seekbar" class="seekbar" min="0" max="100" value="0" step="0.1"></div>
+    <div class="seekbar-container">
+        <input type="range" id="seekbar" class="seekbar" min="0" max="100" value="0" step="0.1">
+    </div>
     <div class="controls-row">
         <div class="left-controls">
-            <button class="ctrl-btn" onclick="JFP.p(event)"><svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg><svg id="pauseIcon" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg></button>
-            <button class="ctrl-btn" onclick="JFP.r(event)"><svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8zm-1.1 11h-.85v-3.26l-1.01.31v-.69l1.77-.63h.09V16zm4.28-1.76c0 .32-.03.6-.1.82-.07.23-.17.42-.29.57-.12.16-.27.27-.44.35-.17.08-.36.12-.57.12-.22 0-.41-.04-.58-.12-.17-.08-.32-.19-.44-.35-.12-.15-.22-.34-.29-.57-.07-.22-.1-.5-.1-.82v-1.48c0-.32.03-.6.1-.82.07-.22.17-.41.29-.57.12-.15.27-.26.44-.34.17-.08.36-.12.58-.12.21 0 .4.04.57.12.17.08.32.19.44.34.12.16.22.35.29.57.07.22.1.5.1.82v1.48zm-.85-1.57c0-.24-.02-.43-.06-.58-.04-.15-.1-.26-.17-.33-.08-.08-.17-.11-.29-.11-.11 0-.21.03-.28.11-.08.07-.13.18-.17.33-.04.15-.06.34-.06.58v1.65c0 .24.02.43.06.58.04.15.1.26.17.33.07.08.17.12.28.12.12 0 .21-.04.29-.12.07-.07.13-.18.17-.33.04-.15.06-.34.06-.58v-1.65z"/></svg></button>
-            <div class="time-display"><span id="currentTime">00:00</span> / <span id="duration">00:00</span></div>
+            <button class="ctrl-btn" onclick="JFP.p(event)">
+                <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <svg id="pauseIcon" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+            <button class="ctrl-btn" onclick="JFP.r(event)">
+                <svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8zm-1.1 11h-.85v-3.26l-1.01.31v-.69l1.77-.63h.09V16zm4.28-1.76c0 .32-.03.6-.1.82-.07.23-.17.42-.29.57-.12.16-.27.27-.44.35-.17.08-.36.12-.57.12-.22 0-.41-.04-.58-.12-.17-.08-.32-.19-.44-.35-.12-.15-.22-.34-.29-.57-.07-.22-.1-.5-.1-.82v-1.48c0-.32.03-.6.1-.82.07-.22.17-.41.29-.57.12-.15.27-.26.44-.34.17-.08.36-.12.58-.12.21 0 .4.04.57.12.17.08.32.19.44.34.12.16.22.35.29.57.07.22.1.5.1.82v1.48zm-.85-1.57c0-.24-.02-.43-.06-.58-.04-.15-.1-.26-.17-.33-.08-.08-.17-.11-.29-.11-.11 0-.21.03-.28.11-.08.07-.13.18-.17.33-.04.15-.06.34-.06.58v1.65c0 .24.02.43.06.58.04.15.1.26.17.33.07.08.17.12.28.12.12 0 .21-.04.29-.12.07-.07.13-.18.17-.33.04-.15.06-.34.06-.58v-1.65z"/></svg>
+            </button>
+            <div class="time-display">
+                <span id="currentTime">00:00</span> / <span id="duration">00:00</span>
+            </div>
         </div>
         <div class="right-controls">
-            <button class="ctrl-btn" onclick="JFP.dl(event)"><svg viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg></button>
-            <button class="ctrl-btn" onclick="JFP.fs(event)"><svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg></button>
+            <button class="ctrl-btn" onclick="JFP.dl(event)">
+                <svg viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>
+            </button>
+            <button class="ctrl-btn" onclick="JFP.fs(event)">
+                <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+            </button>
         </div>
     </div>
 </div>
@@ -70,12 +83,7 @@ body{margin:0;background:#000;overflow:hidden;font-family:Arial,sans-serif}
 </div>
 
 <script>
-(()=>{let P,T,H,L=0,F=!0,$=i=>document.getElementById(i),C=$("container"),B=$("seekbar"),VW=$("videoWrap"),CB=$("centerBrand"),BM=$("backMsg"),FM=$("forwardMsg"),PI=$("playIcon"),PA=$("pauseIcon"),EC=$("endCover"),DLB=$("dlBox"),DLL=$("dlLink");
-function VID(){return new URLSearchParams(location.search).get("v")||"7BrhwM_XCbg"}
-function SH(){C.classList.add("show-controls");VW.classList.add("zoomed");clearTimeout(H);H=setTimeout(()=>{C.classList.remove("show-controls");VW.classList.remove("zoomed")},4000)}
-function MSG(el){el.classList.add("show");setTimeout(()=>el.classList.remove("show"),600)}
-window.onYouTubeIframeAPIReady=()=>{P=new YT.Player("player",{videoId:VID(),playerVars:{autoplay:1,controls:0,disablekb:1,iv_load_policy:3,playsinline:1,fs:0,modestbranding:1},events:{onReady:()=>{P.playVideo();setTimeout(()=>{VW.classList.remove("zoomed");F=!1},4000)},onStateChange:e=>{if(e.data===YT.PlayerState.PLAYING){PI.style.display="none";PA.style.display="block"}else{PI.style.display="block";PA.style.display="none";if(e.data===YT.PlayerState.ENDED)EC.classList.add("show")}}}})}
-C.addEventListener("click",e=>{if(e.target.closest(".bottom-panel")||e.target.closest(".end-cover")||e.target.closest(".dl-box"))return;let n=Date.now(),D=n-L<300;L=n;SH();if(D){e.clientX>innerWidth/2?(P.seekTo(P.getCurrentTime()+10,!0),MSG(FM)):(P.seekTo(P.getCurrentTime()-10,!0),MSG(BM))}});
-window.JFP={p:()=>{P.getPlayerState()===YT.PlayerState.PLAYING?P.pauseVideo():P.playVideo();SH()},r:()=>{P.seekTo(P.getCurrentTime()-10,!0);MSG(BM);SH()},f:()=>{P.seekTo(P.getCurrentTime()+10,!0);MSG(FM);SH()},re:()=>{EC.classList.remove("show");P.seekTo(0,!0);P.playVideo();SH()},fs:()=>{C.requestFullscreen?C.requestFullscreen():C.webkitRequestFullscreen()},dl:()=>{DLL.href="https://snapsave.app/en-US?url=https://www.youtube.com/watch?v="+VID();DLB.style.display=DLB.style.display==="block"?"none":"block"}}
-})();
-</script></body></html>
+(()=>{let P,T,E,H,S=!1,L=0,$=i=>document.getElementById(i),C=$("container"),B=$("seekbar"),CT=$("currentTime"),DT=$("duration"),PI=$("playIcon"),PA=$("pauseIcon"),EC=$("endCover"),BM=$("backMsg"),FM=$("forwardMsg"),SS=$("soundStart"),VW=$("videoWrap"),DLB=$("dlBox"),DLL=$("dlLink"),IS=$("introSite"),TT=$("typingText");function VID(){return new URLSearchParams(location.search).get("v")||"7BrhwM_XCbg"}function FT(x){if(!x||isNaN(x))return"00:00";let h=Math.floor(x/3600),m=Math.floor((x%3600)/60),s=Math.floor(x%60);return h>0?`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`:`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`}function U(){if(!P||S)return;let c=P.getCurrentTime(),d=P.getDuration();CT.innerText=FT(c);DT.innerText=FT(d);if(d)B.value=c/d*100}function SH(dur=5000){C.classList.add("show-controls");VW.classList.add("zoomed");DLB.style.display="none";clearTimeout(H);H=setTimeout(()=>{if(P&&P.getPlayerState()===YT.PlayerState.PLAYING){C.classList.remove("show-controls");VW.classList.remove("zoomed")}},dur)}function MSG(e){e.classList.add("show");setTimeout(()=>e.classList.remove("show"),500)}function SOUND(){if(!P)return;P.unMute();P.setVolume(100);SS.classList.remove("show")}function INTRO(cb){let txt="www.jeenaflix.com",i=0;TT.innerText="";let t=setInterval(()=>{TT.innerText+=txt.charAt(i);i++;if(i>=txt.length){clearInterval(t);setTimeout(()=>{IS.classList.add("hide");cb&&cb()},700)}},90)}window.onYouTubeIframeAPIReady=()=>{P=new YT.Player("player",{videoId:VID(),playerVars:{autoplay:0,controls:0,rel:0,disablekb:1,iv_load_policy:3,playsinline:1,fs:0,modestbranding:1},events:{onReady:()=>{P.unMute();P.setVolume(100);P.seekTo(10,true);C.classList.remove("show-controls");VW.classList.add("zoomed");INTRO(()=>{P.playVideo();setTimeout(()=>{if(P.getPlayerState()===YT.PlayerState.PLAYING)VW.classList.remove("zoomed")},10000);T=setInterval(U,500);setTimeout(()=>{if(P.getPlayerState()!==YT.PlayerState.PLAYING)SS.classList.add("show")},1200)})},onStateChange:e=>{if(e.data===YT.PlayerState.PLAYING){SS.classList.remove("show");PI.style.display="none";PA.style.display="block";SH(5000);clearInterval(E);E=setInterval(()=>{let c=P.getCurrentTime(),d=P.getDuration();if(d&&c>=d-.8){clearInterval(E);P.pauseVideo();EC.classList.add("show")}},300)}else{clearInterval(E);PI.style.display="block";PA.style.display="none";if(e.data===YT.PlayerState.PAUSED||e.data===YT.PlayerState.ENDED){C.classList.add("show-controls");VW.classList.add("zoomed");clearTimeout(H)}}}}})};C.addEventListener("click",e=>{SOUND();if(e.target.closest(".bottom-panel")||e.target.closest(".end-cover"))return;DLB.style.display="none";let n=Date.now(),D=n-L<300;L=n;SH(5000);if(D){e.clientX>innerWidth/2?(JFP.f(),MSG(FM)):(JFP.r(),MSG(BM))}});B.addEventListener("input",()=>{S=!0;let d=P.getDuration(),t=B.value/100*d;CT.innerText=FT(t);SH(5000)});B.addEventListener("change",()=>{let d=P.getDuration(),t=B.value/100*d;P.seekTo(t,!0);S=!1;SH(5000)});window.JFP={p:e=>{if(e)e.stopPropagation();if(!P)return;SOUND();EC.classList.remove("show");P.getPlayerState()===YT.PlayerState.PLAYING?P.pauseVideo():P.playVideo();SH(5000)},r:e=>{if(e)e.stopPropagation();if(!P)return;P.seekTo(Math.max(P.getCurrentTime()-10,0),!0);SH(5000)},f:e=>{if(e)e.stopPropagation();if(!P)return;let d=P.getDuration();P.seekTo(Math.min(P.getCurrentTime()+10,d),!0);SH(5000)},re:e=>{if(e)e.stopPropagation();EC.classList.remove("show");P.seekTo(10,!0);P.unMute();P.setVolume(100);P.playVideo();SH(5000)},fs:e=>{if(e)e.stopPropagation();let x=C;x.requestFullscreen?x.requestFullscreen():x.webkitRequestFullscreen?x.webkitRequestFullscreen():x.msRequestFullscreen&&x.msRequestFullscreen();SH(5000)},dl:e=>{if(e)e.stopPropagation();DLL.href="https://snapsave.app/en-US?url=https://www.youtube.com/watch?v="+VID();DLB.style.display=DLB.style.display==="block"?"none":"block";SH(5000)}};document.addEventListener("keydown",e=>{if(e.ctrlKey||e.key==="F12")e.preventDefault()})})();
+</script>
+</body>
+</html>
