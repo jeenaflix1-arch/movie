@@ -1,4 +1,8 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>JeenaFlix Player</title><script src="https://www.youtube.com/iframe_api"></script><style>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="preconnect" href="https://www.youtube.com">
+<title>JeenaFlix Player</title>
+<script src="https://www.youtube.com/iframe_api"></script>
+<style>
 body{margin:0;background:#000;overflow:hidden;font-family:Arial,sans-serif}.player-container{position:relative;width:100vw;height:100vh;background:#000;overflow:hidden}.video-wrap{position:absolute;top:-4%;left:-2%;width:104%;height:108%;z-index:1;pointer-events:none;transition:all 0.6s ease}.video-wrap.zoomed{top:-30%;left:-15%;width:130%;height:160%}#player{width:100%;height:100%}#player iframe{pointer-events:none!important}
 
 /* Top Left Branding */
@@ -47,6 +51,85 @@ body{margin:0;background:#000;overflow:hidden;font-family:Arial,sans-serif}.play
 </div>
 
 <script>
-(()=>{let P,T,E,H,S=!1,L=0,F=!0,$=i=>document.getElementById(i),C=$("container"),B=$("seekbar"),CB=$("centerBrand"),CT=$("currentTime"),DT=$("duration"),PI=$("playIcon"),PA=$("pauseIcon"),EC=$("endCover"),BM=$("backMsg"),FM=$("forwardMsg"),SS=$("soundStart"),VW=$("videoWrap"),DLB=$("dlBox"),DLL=$("dlLink");function VID(){return new URLSearchParams(location.search).get("v")||"7BrhwM_XCbg"}function FT(x){if(!x||isNaN(x))return"00:00";let h=Math.floor(x/3600),m=Math.floor((x%3600)/60),s=Math.floor(x%60);return h>0?`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`:`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`}function U(){if(!P||S)return;let c=P.getCurrentTime(),d=P.getDuration();CT.innerText=FT(c);DT.innerText=FT(d);if(d)B.value=c/d*100}function SH(dur=5000){C.classList.add("show-controls");VW.classList.add("zoomed");DLB.style.display="none";clearTimeout(H);H=setTimeout(()=>{if(P&&P.getPlayerState()===YT.PlayerState.PLAYING){C.classList.remove("show-controls");VW.classList.remove("zoomed")}},dur)}function SOUND(){if(!P)return;CB.style.display="none";P.unMute();P.setVolume(100);SS.classList.remove("show")}window.onYouTubeIframeAPIReady=()=>{P=new YT.Player("player",{videoId:VID(),playerVars:{autoplay:1,controls:0,rel:0,disablekb:1,iv_load_policy:3,playsinline:1,fs:0,modestbranding:1},events:{onReady:()=>{P.unMute();P.setVolume(100);P.seekTo(10,true);P.playVideo();setTimeout(()=>{CB.style.display="none";},4000);T=setInterval(U,500)},onStateChange:e=>{if(e.data===YT.PlayerState.PLAYING){if(F){/* Increased delay by 1 more second (from 3000 to 4000) before unzooming */setTimeout(()=>{VW.classList.remove("zoomed");F=!1},4000)}CB.style.display="none";SS.classList.remove("show");PI.style.display="none";PA.style.display="block";SH(4000)}else{PI.style.display="block";PA.style.display="none";if(e.data===YT.PlayerState.PAUSED)CB.style.display="none";}}}})};C.addEventListener("click",e=>{SOUND();if(e.target.closest(".bottom-panel")||e.target.closest(".end-cover"))return;DLB.style.display="none";let n=Date.now(),D=n-L<300;L=n;SH(5000);if(D){e.clientX>innerWidth/2?(JFP.f(),MSG(FM)):(JFP.r(),MSG(BM))}});window.JFP={p:e=>{if(e)e.stopPropagation();if(!P)return;SOUND();CB.style.display="none";P.getPlayerState()===YT.PlayerState.PLAYING?P.pauseVideo():P.playVideo();SH(5000)},r:e=>{if(e)e.stopPropagation();P.seekTo(Math.max(P.getCurrentTime()-10,0),!0);SH(5000)},f:e=>{if(e)e.stopPropagation();P.seekTo(Math.min(P.getCurrentTime()+10,P.getDuration()),!0);SH(5000)},re:e=>{if(e)e.stopPropagation();EC.classList.remove("show");P.seekTo(10,!0);P.playVideo();SH(5000)},fs:e=>{if(e)e.stopPropagation();let x=C;x.requestFullscreen?x.requestFullscreen():x.webkitRequestFullscreen?x.webkitRequestFullscreen():x.msRequestFullscreen&&x.msRequestFullscreen();SH(5000)},dl:e=>{if(e)e.stopPropagation();DLL.href="https://snapsave.app/en-US?url=https://www.youtube.com/watch?v="+VID();DLB.style.display=DLB.style.display==="block"?"none":"block";SH(5000)}};})();
+(()=>{
+let P,T,E,H,S=!1,L=0,F=!0,$=i=>document.getElementById(i),C=$("container"),B=$("seekbar"),CB=$("centerBrand"),CT=$("currentTime"),DT=$("duration"),PI=$("playIcon"),PA=$("pauseIcon"),EC=$("endCover"),BM=$("backMsg"),FM=$("forwardMsg"),SS=$("soundStart"),VW=$("videoWrap"),DLB=$("dlBox"),DLL=$("dlLink");
+
+function VID(){return new URLSearchParams(location.search).get("v")||"7BrhwM_XCbg"}
+
+function FT(x){if(!x||isNaN(x))return"00:00";let h=Math.floor(x/3600),m=Math.floor((x%3600)/60),s=Math.floor(x%60);return h>0?`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`:`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`}
+
+function U(){if(!P||S)return;let c=P.getCurrentTime(),d=P.getDuration();CT.innerText=FT(c);DT.innerText=FT(d);if(d)B.value=(c/d)*100}
+
+function SH(dur=4000){
+    C.classList.add("show-controls");
+    DLB.style.display="none";
+    clearTimeout(H);
+    H=setTimeout(()=>{if(P&&P.getPlayerState()===YT.PlayerState.PLAYING){C.classList.remove("show-controls")}},dur)
+}
+
+function SOUND(){if(!P)return;CB.style.display="none";P.unMute();P.setVolume(100);SS.classList.remove("show")}
+
+// +10s / -10s میسج دکھانے کا فنکشن جو پچھلے کوڈ میں رہ گیا تھا
+function MSG(el){el.classList.add("show");setTimeout(()=>el.classList.remove("show"),600)}
+
+// سیک بار (لائن) کو ہاتھ سے آگے پیچھے کرنے کا کوڈ
+B.addEventListener("input", e=>{
+    S=!0;
+    if(P&&P.getDuration()){
+        let nx=(e.target.value/100)*P.getDuration();
+        CT.innerText=FT(nx);
+    }
+});
+B.addEventListener("change", e=>{
+    if(P&&P.getDuration()){
+        let nx=(e.target.value/100)*P.getDuration();
+        P.seekTo(nx,!0);
+    }
+    S=!1;
+    SH(4000);
+});
+
+window.onYouTubeIframeAPIReady=()=>{
+    P=new YT.Player("player",{
+        videoId:VID(),
+        playerVars:{autoplay:1,controls:0,rel:0,disablekb:1,iv_load_policy:3,playsinline:1,fs:0,modestbranding:1},
+        events:{
+            onReady:()=>{
+                P.unMute();P.setVolume(100);P.seekTo(10,!0);P.playVideo();
+                setTimeout(()=>{CB.style.display="none";},4000);
+                T=setInterval(U,500)
+            },
+            onStateChange:e=>{
+                if(e.data===YT.PlayerState.PLAYING){
+                    if(F){setTimeout(()=>{VW.classList.remove("zoomed");F=!1},4000)}
+                    CB.style.display="none";SS.classList.remove("show");PI.style.display="none";PA.style.display="block";SH(4000)
+                }else{
+                    PI.style.display="block";PA.style.display="none";
+                    if(e.data===YT.PlayerState.PAUSED)CB.style.display="none";
+                    if(e.data===YT.PlayerState.ENDED)EC.classList.add("show");
+                }
+            }
+        }
+    })
+};
+
+C.addEventListener("click",e=>{
+    SOUND();
+    if(e.target.closest(".bottom-panel")||e.target.closest(".end-cover")||e.target.closest(".dl-box"))return;
+    DLB.style.display="none";
+    let n=Date.now(),D=n-L<300;L=n;
+    SH(4000);
+    if(D){e.clientX>innerWidth/2?(JFP.f(),MSG(FM)):(JFP.r(),MSG(BM))}
+});
+
+window.JFP={
+    p:e=>{if(e)e.stopPropagation();if(!P)return;SOUND();CB.style.display="none";P.getPlayerState()===YT.PlayerState.PLAYING?P.pauseVideo():P.playVideo();SH(4000)},
+    r:e=>{if(e)e.stopPropagation();P.seekTo(Math.max(P.getCurrentTime()-10,0),!0);SH(4000)},
+    f:e=>{if(e)e.stopPropagation();P.seekTo(Math.min(P.getCurrentTime()+10,P.getDuration()),!0);SH(4000)},
+    re:e=>{if(e)e.stopPropagation();EC.classList.remove("show");P.seekTo(10,!0);P.playVideo();SH(4000)},
+    fs:e=>{if(e)e.stopPropagation();let x=C;x.requestFullscreen?x.requestFullscreen():x.webkitRequestFullscreen?x.webkitRequestFullscreen():x.msRequestFullscreen&&x.msRequestFullscreen();SH(4000)},
+    dl:e=>{if(e)e.stopPropagation();DLL.href="https://snapsave.app/en-US?url=https://www.youtube.com/watch?v="+VID();DLB.style.display=DLB.style.display==="block"?"none":"block";SH(5000)}
+};
+})();
 </script>
 </body></html>
