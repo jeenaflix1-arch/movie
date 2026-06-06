@@ -1,27 +1,46 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<link rel="preconnect" href="https://www.youtube.com">
 <title>JeenaFlix Player</title>
 <script src="https://www.youtube.com/iframe_api"></script>
 <style>
-body{margin:0;background:#000;overflow:hidden;font-family:Arial,sans-serif}.player-container{position:relative;width:100vw;height:100vh;background:#000;overflow:hidden}.video-wrap{position:absolute;top:-4%;left:-2%;width:104%;height:108%;z-index:1;pointer-events:none;transition:all 0.6s ease}.video-wrap.zoomed{top:-30%;left:-15%;width:130%;height:160%}#player{width:100%;height:100%}#player iframe{pointer-events:none!important}
+body{margin:0;background:#000;overflow:hidden;font-family:Arial,sans-serif}
+.player-container{position:relative;width:100vw;height:100vh;background:#000;overflow:hidden}
+/* ویڈیو زومنگ کنٹرول */
+.video-wrap{position:absolute;top:-4%;left:-2%;width:104%;height:108%;z-index:1;pointer-events:none;transition:all 0.4s ease}
+.video-wrap.zoomed{top:-30%;left:-15%;width:130%;height:160%} 
+#player{width:100%;height:100%}
+#player iframe{pointer-events:none!important}
 
-/* Top Left Branding */
 .brand{position:absolute;top:15px;left:15px;z-index:999999;color:#fff;font-weight:900;font-size:22px;pointer-events:none;text-shadow:0 2px 8px rgba(0,0,0,.9)}
-/* Center Branding & Advertisement */
 .center-brand-wrap{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:999999;color:#fff;}
 .main-text{font-size:35px;font-weight:900;font-family:monospace;white-space:nowrap;overflow:hidden;border-right:4px solid #e50914;width:0;animation:typing 3s steps(30) forwards,blink .7s infinite;text-shadow:0 0 20px #e50914;margin:0 auto;}
 .sub-text{font-size:13px;color:#e50914;margin-top:12px;opacity:0;animation:fadeIn 1s 3s forwards;letter-spacing:1.5px;text-transform:uppercase;font-weight:bold;}
 @keyframes typing{from{width:0}to{width:360px}}@keyframes blink{50%{border-color:transparent}}@keyframes fadeIn{to{opacity:1}}
 
-.bottom-panel{position:absolute;left:0;bottom:0;width:100%;background:linear-gradient(to top,rgba(0,0,0,.9) 0,transparent 100%);padding:10px 15px;box-sizing:border-box;z-index:99999;opacity:0;pointer-events:none;transition:.25s;display:flex;flex-direction:column;gap:12px}.show-controls .bottom-panel{opacity:1;pointer-events:auto}.seekbar{width:100%;height:3px;-webkit-appearance:none;background:rgba(255,255,255,.3);border-radius:2px;outline:none;cursor:pointer;accent-color:#e50914}.controls-row{display:flex;justify-content:space-between;align-items:center;width:100%}.left-controls,.right-controls{display:flex;align-items:center;gap:18px}.ctrl-btn{background:0 0;border:none;cursor:pointer;padding:0;display:flex;justify-content:center;align-items:center}.ctrl-btn svg{width:26px;height:26px;fill:#fff;transition:.2s}.ctrl-btn:hover svg{fill:#e50914}.time-display{color:#fff;font-size:14px;user-select:none;margin-left:2px;font-weight:500}.tap-msg{position:absolute;top:50%;transform:translateY(-50%);z-index:999999;color:#fff;background:rgba(0,0,0,.6);padding:12px 18px;border-radius:30px;font-weight:bold;opacity:0;transition:.25s;pointer-events:none}.tap-msg.left{left:35px}.tap-msg.right{right:35px}.tap-msg.show{opacity:1}.start-sound{position:absolute;inset:0;z-index:999999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.25);color:#fff;font-weight:900;font-size:20px;text-align:center}.start-sound.show{display:flex}.end-cover{position:absolute;inset:0;background:#000;display:none;justify-content:center;align-items:center;flex-direction:column;z-index:999999;color:#fff}.end-cover.show{display:flex}.replay-btn{background:#e50914;color:#fff;border:none;padding:12px 22px;border-radius:10px;font-size:17px;cursor:pointer}.dl-box{position:absolute;bottom:70px;right:20px;background:#111;padding:15px;border-radius:8px;border:1px solid #e50914;display:none;z-index:999999}.dl-box a{color:#fff;text-decoration:none;display:block;padding:5px 0}
-@media(max-width:600px){.brand{font-size:18px}.main-text{font-size:24px;}@keyframes typing{from{width:0}to{width:250px}}.sub-text{font-size:10px;}}
-</style></head><body oncontextmenu="return false">
+.bottom-panel{position:absolute;left:0;bottom:0;width:100%;background:linear-gradient(to top,rgba(0,0,0,.9) 0,transparent 100%);padding:10px 15px;box-sizing:border-box;z-index:99999;opacity:0;pointer-events:none;transition:.25s;display:flex;flex-direction:column;gap:12px}
+.show-controls .bottom-panel{opacity:1;pointer-events:auto}
+.seekbar{width:100%;height:3px;-webkit-appearance:none;background:rgba(255,255,255,.3);border-radius:2px;outline:none;cursor:pointer;accent-color:#e50914}
+.controls-row{display:flex;justify-content:space-between;align-items:center;width:100%}
+.left-controls,.right-controls{display:flex;align-items:center;gap:18px}
+.ctrl-btn{background:0 0;border:none;cursor:pointer;padding:0;display:flex;justify-content:center;align-items:center}
+.ctrl-btn svg{width:26px;height:26px;fill:#fff;transition:.2s}
+.ctrl-btn:hover svg{fill:#e50914}
+.time-display{color:#fff;font-size:14px;user-select:none;margin-left:2px;font-weight:500}
+.tap-msg{position:absolute;top:50%;transform:translateY(-50%);z-index:999999;color:#fff;background:rgba(0,0,0,.6);padding:12px 18px;border-radius:30px;font-weight:bold;opacity:0;transition:.25s;pointer-events:none}
+.tap-msg.left{left:35px}.tap-msg.right{right:35px}.tap-msg.show{opacity:1}
+.start-sound{position:absolute;inset:0;z-index:999999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.25);color:#fff;font-weight:900;font-size:20px;text-align:center}
+.start-sound.show{display:flex}
+.end-cover{position:absolute;inset:0;background:#000;display:none;justify-content:center;align-items:center;flex-direction:column;z-index:999999;color:#fff}
+.end-cover.show{display:flex}
+.replay-btn{background:#e50914;color:#fff;border:none;padding:12px 22px;border-radius:10px;font-size:17px;cursor:pointer}
+.dl-box{position:absolute;bottom:70px;right:20px;background:#111;padding:15px;border-radius:8px;border:1px solid #e50914;display:none;z-index:999999}
+.dl-box a{color:#fff;text-decoration:none;display:block;padding:5px 0}
+</style></head>
+<body oncontextmenu="return false">
 
 <div id="container" class="player-container">
 <div class="video-wrap zoomed" id="videoWrap"><div id="player"></div></div>
 
 <div class="brand">JeenaFlix</div>
-
 <div id="centerBrand" class="center-brand-wrap">
     <div class="main-text">www.JeenaFlix.com</div>
     <div class="sub-text">Download JeenaFlix App for the best experience!</div>
@@ -51,85 +70,12 @@ body{margin:0;background:#000;overflow:hidden;font-family:Arial,sans-serif}.play
 </div>
 
 <script>
-(()=>{
-let P,T,E,H,S=!1,L=0,F=!0,$=i=>document.getElementById(i),C=$("container"),B=$("seekbar"),CB=$("centerBrand"),CT=$("currentTime"),DT=$("duration"),PI=$("playIcon"),PA=$("pauseIcon"),EC=$("endCover"),BM=$("backMsg"),FM=$("forwardMsg"),SS=$("soundStart"),VW=$("videoWrap"),DLB=$("dlBox"),DLL=$("dlLink");
-
+(()=>{let P,T,H,L=0,F=!0,$=i=>document.getElementById(i),C=$("container"),B=$("seekbar"),VW=$("videoWrap"),CB=$("centerBrand"),BM=$("backMsg"),FM=$("forwardMsg"),PI=$("playIcon"),PA=$("pauseIcon"),EC=$("endCover"),DLB=$("dlBox"),DLL=$("dlLink");
 function VID(){return new URLSearchParams(location.search).get("v")||"7BrhwM_XCbg"}
-
-function FT(x){if(!x||isNaN(x))return"00:00";let h=Math.floor(x/3600),m=Math.floor((x%3600)/60),s=Math.floor(x%60);return h>0?`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`:`${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`}
-
-function U(){if(!P||S)return;let c=P.getCurrentTime(),d=P.getDuration();CT.innerText=FT(c);DT.innerText=FT(d);if(d)B.value=(c/d)*100}
-
-function SH(dur=4000){
-    C.classList.add("show-controls");
-    DLB.style.display="none";
-    clearTimeout(H);
-    H=setTimeout(()=>{if(P&&P.getPlayerState()===YT.PlayerState.PLAYING){C.classList.remove("show-controls")}},dur)
-}
-
-function SOUND(){if(!P)return;CB.style.display="none";P.unMute();P.setVolume(100);SS.classList.remove("show")}
-
-// +10s / -10s میسج دکھانے کا فنکشن جو پچھلے کوڈ میں رہ گیا تھا
+function SH(){C.classList.add("show-controls");VW.classList.add("zoomed");clearTimeout(H);H=setTimeout(()=>{C.classList.remove("show-controls");VW.classList.remove("zoomed")},4000)}
 function MSG(el){el.classList.add("show");setTimeout(()=>el.classList.remove("show"),600)}
-
-// سیک بار (لائن) کو ہاتھ سے آگے پیچھے کرنے کا کوڈ
-B.addEventListener("input", e=>{
-    S=!0;
-    if(P&&P.getDuration()){
-        let nx=(e.target.value/100)*P.getDuration();
-        CT.innerText=FT(nx);
-    }
-});
-B.addEventListener("change", e=>{
-    if(P&&P.getDuration()){
-        let nx=(e.target.value/100)*P.getDuration();
-        P.seekTo(nx,!0);
-    }
-    S=!1;
-    SH(4000);
-});
-
-window.onYouTubeIframeAPIReady=()=>{
-    P=new YT.Player("player",{
-        videoId:VID(),
-        playerVars:{autoplay:1,controls:0,rel:0,disablekb:1,iv_load_policy:3,playsinline:1,fs:0,modestbranding:1},
-        events:{
-            onReady:()=>{
-                P.unMute();P.setVolume(100);P.seekTo(10,!0);P.playVideo();
-                setTimeout(()=>{CB.style.display="none";},4000);
-                T=setInterval(U,500)
-            },
-            onStateChange:e=>{
-                if(e.data===YT.PlayerState.PLAYING){
-                    if(F){setTimeout(()=>{VW.classList.remove("zoomed");F=!1},4000)}
-                    CB.style.display="none";SS.classList.remove("show");PI.style.display="none";PA.style.display="block";SH(4000)
-                }else{
-                    PI.style.display="block";PA.style.display="none";
-                    if(e.data===YT.PlayerState.PAUSED)CB.style.display="none";
-                    if(e.data===YT.PlayerState.ENDED)EC.classList.add("show");
-                }
-            }
-        }
-    })
-};
-
-C.addEventListener("click",e=>{
-    SOUND();
-    if(e.target.closest(".bottom-panel")||e.target.closest(".end-cover")||e.target.closest(".dl-box"))return;
-    DLB.style.display="none";
-    let n=Date.now(),D=n-L<300;L=n;
-    SH(4000);
-    if(D){e.clientX>innerWidth/2?(JFP.f(),MSG(FM)):(JFP.r(),MSG(BM))}
-});
-
-window.JFP={
-    p:e=>{if(e)e.stopPropagation();if(!P)return;SOUND();CB.style.display="none";P.getPlayerState()===YT.PlayerState.PLAYING?P.pauseVideo():P.playVideo();SH(4000)},
-    r:e=>{if(e)e.stopPropagation();P.seekTo(Math.max(P.getCurrentTime()-10,0),!0);SH(4000)},
-    f:e=>{if(e)e.stopPropagation();P.seekTo(Math.min(P.getCurrentTime()+10,P.getDuration()),!0);SH(4000)},
-    re:e=>{if(e)e.stopPropagation();EC.classList.remove("show");P.seekTo(10,!0);P.playVideo();SH(4000)},
-    fs:e=>{if(e)e.stopPropagation();let x=C;x.requestFullscreen?x.requestFullscreen():x.webkitRequestFullscreen?x.webkitRequestFullscreen():x.msRequestFullscreen&&x.msRequestFullscreen();SH(4000)},
-    dl:e=>{if(e)e.stopPropagation();DLL.href="https://snapsave.app/en-US?url=https://www.youtube.com/watch?v="+VID();DLB.style.display=DLB.style.display==="block"?"none":"block";SH(5000)}
-};
+window.onYouTubeIframeAPIReady=()=>{P=new YT.Player("player",{videoId:VID(),playerVars:{autoplay:1,controls:0,disablekb:1,iv_load_policy:3,playsinline:1,fs:0,modestbranding:1},events:{onReady:()=>{P.playVideo();setTimeout(()=>{VW.classList.remove("zoomed");F=!1},4000)},onStateChange:e=>{if(e.data===YT.PlayerState.PLAYING){PI.style.display="none";PA.style.display="block"}else{PI.style.display="block";PA.style.display="none";if(e.data===YT.PlayerState.ENDED)EC.classList.add("show")}}}})}
+C.addEventListener("click",e=>{if(e.target.closest(".bottom-panel")||e.target.closest(".end-cover")||e.target.closest(".dl-box"))return;let n=Date.now(),D=n-L<300;L=n;SH();if(D){e.clientX>innerWidth/2?(P.seekTo(P.getCurrentTime()+10,!0),MSG(FM)):(P.seekTo(P.getCurrentTime()-10,!0),MSG(BM))}});
+window.JFP={p:()=>{P.getPlayerState()===YT.PlayerState.PLAYING?P.pauseVideo():P.playVideo();SH()},r:()=>{P.seekTo(P.getCurrentTime()-10,!0);MSG(BM);SH()},f:()=>{P.seekTo(P.getCurrentTime()+10,!0);MSG(FM);SH()},re:()=>{EC.classList.remove("show");P.seekTo(0,!0);P.playVideo();SH()},fs:()=>{C.requestFullscreen?C.requestFullscreen():C.webkitRequestFullscreen()},dl:()=>{DLL.href="https://snapsave.app/en-US?url=https://www.youtube.com/watch?v="+VID();DLB.style.display=DLB.style.display==="block"?"none":"block"}}
 })();
-</script>
-</body></html>
+</script></body></html>
